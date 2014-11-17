@@ -1,0 +1,8 @@
+{
+  "name": "app-json-res",
+  "version": "0.1.0",
+  "description": "Response with promised json",
+  "main": "index.js",
+  "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
+  "license": "MIT"
+}
