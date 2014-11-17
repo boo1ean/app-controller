@@ -4,5 +4,15 @@
   "description": "Response with promised json",
   "main": "index.js",
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "body-parser": "^1.9.2",
+    "express": "^4.10.2",
+    "mocha": "^2.0.1",
+    "should": "^4.3.0",
+    "yartf": "0.0.16"
+  },
+  "dependencies": {
+    "lodash": "^2.4.1"
+  }
 }

@@ -48,9 +48,11 @@ function wrap (action, errorHandler) {
 
 // Wrap function or functions object
 function adapt (controller, errorHandler) {
-	if (!_.isFunction(errorHandler)) {
-		throw new Error('Error handler function is required');
+	if (errorHandler && !_.isFunction(errorHandler)) {
+		throw new Error('Error handler should be a function');
 	}
+
+	errorhandler = errorHandler || defaultErrorHandler;
 
 	if (_.isFunction(controller)) {
 		return wrap(controller, errorHandler);
