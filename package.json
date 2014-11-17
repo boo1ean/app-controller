@@ -6,9 +6,12 @@
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "bluebird": "^2.3.11",
     "body-parser": "^1.9.2",
+    "casual": "^1.4.6",
     "express": "^4.10.2",
     "mocha": "^2.0.1",
+    "q": "^1.1.1",
     "should": "^4.3.0",
     "yartf": "0.0.16"
   },

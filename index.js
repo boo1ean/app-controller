@@ -1,8 +1,7 @@
 var _ = require('lodash');
 
 function defaultErrorHandler (req, res, err) {
-	res.status = 500;
-	res.end();
+	res.status(500).end();
 	console.error(err);
 }
 
@@ -19,13 +18,13 @@ function wrap (action, errorHandler) {
 
 			// Check if result is promise then do chaining
 			if (typeof result.done === 'function') {
-				result.done(onFulfilled, errorhandler);
+				result.done(onFulfilled, onRejected);
 			} else {
 				onFulfilled(result);
 			}
 
-		} catch (error) {
-			errorhandler(error);
+		} catch (err) {
+			onRejected(err);
 		}
 
 		// Success handler
@@ -43,7 +42,7 @@ function wrap (action, errorHandler) {
 		function onRejected (err) {
 			errorHandler(req, res, err);
 		}
-	};
+	}
 }
 
 // Wrap function or functions object
@@ -52,7 +51,7 @@ function adapt (controller, errorHandler) {
 		throw new Error('Error handler should be a function');
 	}
 
-	errorhandler = errorHandler || defaultErrorHandler;
+	errorHandler = errorHandler || defaultErrorHandler;
 
 	if (_.isFunction(controller)) {
 		return wrap(controller, errorHandler);
