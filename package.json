@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Response with promised json",
   "main": "index.js",
+  "repository": "git@github.com:boo1ean/app-json-res.git",
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
   "license": "MIT",
   "devDependencies": {
