@@ -97,12 +97,12 @@ describe('Responses', function () {
 
 
 	it('should response with 500', function (done) {
-		app.post('/error', jsonRes(function (params) {
+		app.post('/error-0', jsonRes(function (params) {
 			throw new Error('lol wat');
 		}));
 
 		t(baseUrl)
-			.post('/error')
+			.post('/error-0')
 			.as('error')
 			.assert(function(res) {
 				res.error.status.should.be.exactly(500);
@@ -111,14 +111,14 @@ describe('Responses', function () {
 	});
 
 	it('should response with 500 rejected Q promise', function (done) {
-		app.post('/error', jsonRes(function (params) {
+		app.post('/error-1', jsonRes(function (params) {
 			var deferred = Q.defer();
 			deferred.reject('lol wat');
 			return deferred.promise;
 		}));
 
 		t(baseUrl)
-			.post('/error')
+			.post('/error-1')
 			.as('error')
 			.assert(function(res) {
 				res.error.status.should.be.exactly(500);
@@ -127,15 +127,34 @@ describe('Responses', function () {
 	});
 
 	it('should response with 500 rejected bluebird promise', function (done) {
-		app.post('/error', jsonRes(function (params) {
-			Promise.reject('lol wat');
+		app.post('/error-2', jsonRes(function (params) {
+			return Promise.reject('lol wat');
 		}));
 
 		t(baseUrl)
-			.post('/error')
+			.post('/error-2')
 			.as('error')
 			.assert(function(res) {
 				res.error.status.should.be.exactly(500);
+			})
+			.exec(done);
+	});
+
+	it('should use custom error handler', function (done) {
+		app.post('/error-3', jsonRes(function (params) {
+			return Promise.reject('err');
+		}));
+
+		jsonRes.setErrorHandler(function (req, res) {
+			res.status(500).send('ERROR');
+		});
+
+		t(baseUrl)
+			.post('/error-3')
+			.as('error')
+			.assert(function(res) {
+				res.error.status.should.be.exactly(500);
+				res.error.body.should.be.exactly('ERROR');
 			})
 			.exec(done);
 	});

@@ -1,12 +1,7 @@
 var _ = require('lodash');
 
-function defaultErrorHandler (req, res, err) {
-	res.status(500).end();
-	console.error(err);
-}
-
 // Wrap function with autoresponse with promises and error handling
-function wrap (action, errorHandler) {
+function wrap (action) {
 	return function wrapAction (req, res) {
 
 		// Gather all possible params to a single object
@@ -45,16 +40,30 @@ function wrap (action, errorHandler) {
 	}
 }
 
-// Wrap function or functions object
-function adapt (controller, errorHandler) {
-	if (errorHandler && !_.isFunction(errorHandler)) {
+// Error handler
+function errorHandler (req, res, err) {
+	// In case of failed app-validation
+	if (err && err.errors) {
+		res.status(400).json(err);
+	} else {
+		console.error(err);
+		res.status(500).end();
+	}
+}
+
+// Set global error handler (for all actions)
+function setErrorHandler (handler) {
+	if (handler && !_.isFunction(handler)) {
 		throw new Error('Error handler should be a function');
 	}
 
-	errorHandler = errorHandler || defaultErrorHandler;
+	errorHandler = handler;
+}
 
+// Wrap function or functions object
+function wrapAll (controller) {
 	if (_.isFunction(controller)) {
-		return wrap(controller, errorHandler);
+		return wrap(controller);
 	}
 
 	if (!_.isObject(controller)) {
@@ -63,10 +72,11 @@ function adapt (controller, errorHandler) {
 
 	var result = {};
 	for (var name in controller) {
-		result[name] = wrap(controller[name], errorhandler);
+		result[name] = wrap(controller[name]);
 	}
 
 	return result;
 }
 
-module.exports = adapt;
+module.exports = wrapAll;
+module.exports.setErrorHandler = setErrorHandler;
