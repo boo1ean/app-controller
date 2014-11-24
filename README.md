@@ -1,4 +1,4 @@
-## app-json-res
+## app-controller
 
 Part of app helpers project.
 
@@ -12,14 +12,14 @@ You only need to return value from route handler.
 ## Installation
 
 ```
-npm install app-json-res
+npm install app-controller
 ```
 
 ## Usage
 
 ```javascript
 var app = require('express')();
-var adapt = require('app-json-res');
+var adapt = require('app-controller');
 var bodyParser = require('body-parser');
 var Promise = require('bluebird');
 
