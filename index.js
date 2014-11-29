@@ -10,7 +10,7 @@ function wrap (action) {
 
 		try {
 			// Execute handler
-			var result = action(params, req.user, req);
+			var result = action(params, req, res);
 
 			// Check if result is promise then do chaining
 			if (typeof result.done === 'function') {

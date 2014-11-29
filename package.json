@@ -1,6 +1,6 @@
 {
   "name": "app-controller",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Response with promised json",
   "keywords": "app-helpers, express, response, json, rest",
   "main": "index.js",
