@@ -13,7 +13,7 @@ function wrap (action) {
 			var result = action(params, req, res);
 
 			// Check if result is promise then do chaining
-			if (typeof result.done === 'function') {
+			if (!_.isUndefined(result) && _.isFunction(result.done)) {
 				result.done(onFulfilled, onRejected);
 			} else {
 				onFulfilled(result);
