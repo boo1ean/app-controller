@@ -86,3 +86,4 @@ function wrapAll (controller) {
 
 module.exports = wrapAll;
 module.exports.setErrorHandler = setErrorHandler;
+module.exports.setLogger = setLogger;
