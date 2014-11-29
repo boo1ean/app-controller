@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var log = require('app-log');
 
 // Wrap function with autoresponse with promises and error handling
 function wrap (action) {
@@ -46,7 +47,7 @@ function errorHandler (req, res, err) {
 	if (err && err.errors) {
 		res.status(400).json(err);
 	} else {
-		console.error(err);
+		log.error(err);
 		res.status(500).end();
 	}
 }
@@ -58,6 +59,11 @@ function setErrorHandler (handler) {
 	}
 
 	errorHandler = handler;
+}
+
+// Set controller logger (uses app-log interface)
+function setLogger (logger) {
+	log = logger;
 }
 
 // Wrap function or functions object
