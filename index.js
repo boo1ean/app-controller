@@ -3,6 +3,10 @@ var log = require('app-log');
 
 // Wrap function with autoresponse with promises and error handling
 function wrap (action) {
+	if (!_.isFunction(action)) {
+		throw new Error('Controller action must be a function but ' + typeof action + ' is given');
+	}
+
 	return function wrapAction (req, res) {
 
 		// Gather all possible params to a single object
