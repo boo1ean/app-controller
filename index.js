@@ -1,6 +1,34 @@
 var _ = require('lodash');
 var log = require('app-log');
 
+var responders = {
+	'POST': responsePOST,
+	'GET': responseGET,
+	'PUT': responsePUT,
+	'DELETE': responsePUT,
+	'PATCH': responsePUT
+};
+
+function responsePOST (data, res) {
+	return res.status(201).json(data);
+}
+
+function responseGET (data, res) {
+	if (!data) {
+		return res.status(404).end();
+	}
+
+	return res.status(200).json(data);
+}
+
+function responsePUT (data, res) {
+	if (!data) {
+		return res.status(204).end();
+	}
+
+	return res.status(200).json(data);
+}
+
 // Wrap function with autoresponse with promises and error handling
 function wrap (action) {
 	if (!_.isFunction(action)) {
@@ -35,7 +63,7 @@ function wrap (action) {
 			}
 
 			// Response with json
-			res.json(data);
+			responders[req.method](data, res);
 		}
 
 		// Error handler

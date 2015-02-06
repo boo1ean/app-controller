@@ -2,7 +2,7 @@ var t = require('yartf');
 var bodyParser = require('body-parser');
 var express = require('express');
 var should = require('should');
-var jsonRes = require('./');
+var controller = require('./');
 var c = require('casual');
 var _ = require('lodash');
 var Q = require('q');
@@ -21,7 +21,7 @@ describe('Responses', function () {
 		var randomString = c.string;
 
 		// Simple json res
-		app.get('/', jsonRes(function () {
+		app.get('/', controller(function () {
 			return { a: randomString };
 		}));
 
@@ -41,7 +41,7 @@ describe('Responses', function () {
 			b: c.card_data
 		};
 
-		app.post('/pass-back', jsonRes(function (params) {
+		app.post('/pass-back', controller(function (params) {
 			return params;
 		}));
 
@@ -49,7 +49,7 @@ describe('Responses', function () {
 			.post('/pass-back', testData)
 			.as('passBack')
 			.assert(function(res, sample) {
-				res.passBack.status.should.be.exactly(200);
+				res.passBack.status.should.be.exactly(201);
 				_.isEqual(res.passBack.body, testData).should.be.ok;
 			})
 			.exec(done);
@@ -61,7 +61,7 @@ describe('Responses', function () {
 			b: c.card_data
 		};
 
-		app.post('/pass-back', jsonRes(function (params) {
+		app.post('/pass-back', controller(function (params) {
 			return Q(params);
 		}));
 
@@ -69,7 +69,7 @@ describe('Responses', function () {
 			.post('/pass-back', testData)
 			.as('passBack')
 			.assert(function(res) {
-				res.passBack.status.should.be.exactly(200);
+				res.passBack.status.should.be.exactly(201);
 				_.isEqual(res.passBack.body, testData).should.be.ok;
 			})
 			.exec(done);
@@ -81,7 +81,7 @@ describe('Responses', function () {
 			b: c.card_data
 		};
 
-		app.post('/pass-back', jsonRes(function (params) {
+		app.post('/pass-back', controller(function (params) {
 			return Promise.resolve(params);
 		}));
 
@@ -89,7 +89,7 @@ describe('Responses', function () {
 			.post('/pass-back', testData)
 			.as('passBack')
 			.assert(function(res) {
-				res.passBack.status.should.be.exactly(200);
+				res.passBack.status.should.be.exactly(201);
 				_.isEqual(res.passBack.body, testData).should.be.ok;
 			})
 			.exec(done);
@@ -97,7 +97,7 @@ describe('Responses', function () {
 
 
 	it('should response with 500', function (done) {
-		app.post('/error-0', jsonRes(function (params) {
+		app.post('/error-0', controller(function (params) {
 			throw new Error('lol wat');
 		}));
 
@@ -111,7 +111,7 @@ describe('Responses', function () {
 	});
 
 	it('should response with 500 rejected Q promise', function (done) {
-		app.post('/error-1', jsonRes(function (params) {
+		app.post('/error-1', controller(function (params) {
 			var deferred = Q.defer();
 			deferred.reject('lol wat');
 			return deferred.promise;
@@ -127,7 +127,7 @@ describe('Responses', function () {
 	});
 
 	it('should response with 500 rejected bluebird promise', function (done) {
-		app.post('/error-2', jsonRes(function (params) {
+		app.post('/error-2', controller(function (params) {
 			return Promise.reject('lol wat');
 		}));
 
@@ -140,12 +140,26 @@ describe('Responses', function () {
 			.exec(done);
 	});
 
+	it('should return 404 if no data', function (done) {
+		app.get('/no-data', controller(function (params) {
+			return Promise.resolve();
+		}));
+
+		t(baseUrl)
+			.get('/no-data')
+			.as('notFound')
+			.assert(function(res) {
+				res.notFound.status.should.be.exactly(404);
+			})
+			.exec(done);
+	});
+
 	it('should use custom error handler', function (done) {
-		app.post('/error-3', jsonRes(function (params) {
+		app.post('/error-3', controller(function (params) {
 			return Promise.reject('err');
 		}));
 
-		jsonRes.setErrorHandler(function (req, res) {
+		controller.setErrorHandler(function (req, res) {
 			res.status(500).send('ERROR');
 		});
 
@@ -158,4 +172,32 @@ describe('Responses', function () {
 			})
 			.exec(done);
 	});
+
+	it('should return not modified if no data', function (done) {
+		app.put('/not-mod', controller(function (params) {
+			return;
+		}));
+
+		t(baseUrl)
+			.put('/not-mod')
+			.as('result')
+			.assert(function(res) {
+				res.result.status.should.be.exactly(204);
+			})
+			.exec(done);
+	});
+
+	it('should return 200 if delete with data', function (done) {
+		app.delete('/deldel', controller(function (params) {
+			return {};
+		}));
+
+		t(baseUrl)
+			.del('/deldel')
+			.as('result')
+			.assert(function(res) {
+				res.result.status.should.be.exactly(200);
+			})
+			.exec(done);
+	})
 });
