@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var log = require('app-log');
 
 var responders = {
 	'POST': responsePOST,
@@ -35,7 +34,7 @@ function wrap (action) {
 		throw new Error('Controller action must be a function but ' + typeof action + ' is given');
 	}
 
-	return function wrapAction (req, res) {
+	return function wrapAction (req, res, next) {
 
 		// Gather all possible params to a single object
 		var params = _.extend({}, req.params, req.query, req.body);
@@ -45,8 +44,8 @@ function wrap (action) {
 			var result = action(params, req, res);
 
 			// Check if result is promise then do chaining
-			if (!_.isUndefined(result) && _.isFunction(result.done)) {
-				result.done(onFulfilled, onRejected);
+			if (!_.isUndefined(result) && _.isFunction(result.then)) {
+				result.then(onFulfilled, onRejected);
 			} else {
 				onFulfilled(result);
 			}
@@ -68,34 +67,9 @@ function wrap (action) {
 
 		// Error handler
 		function onRejected (err) {
-			errorHandler(req, res, err);
+			next(err);
 		}
 	}
-}
-
-// Error handler
-function errorHandler (req, res, err) {
-	// In case of failed app-validation
-	if (err && err.errors) {
-		res.status(400).json(err);
-	} else {
-		log.error(err);
-		res.status(500).end();
-	}
-}
-
-// Set global error handler (for all actions)
-function setErrorHandler (handler) {
-	if (handler && !_.isFunction(handler)) {
-		throw new Error('Error handler should be a function');
-	}
-
-	errorHandler = handler;
-}
-
-// Set controller logger (uses app-log interface)
-function setLogger (logger) {
-	log = logger;
 }
 
 // Wrap function or functions object
@@ -117,5 +91,3 @@ function wrapAll (controller) {
 }
 
 module.exports = wrapAll;
-module.exports.setErrorHandler = setErrorHandler;
-module.exports.setLogger = setLogger;

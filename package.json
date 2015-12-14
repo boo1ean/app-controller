@@ -18,7 +18,6 @@
     "yartf": "0.0.16"
   },
   "dependencies": {
-    "app-log": "^0.1.0",
     "lodash": "^2.4.1"
   }
 }
