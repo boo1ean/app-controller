@@ -29,7 +29,7 @@ function responsePUT (data, res) {
 }
 
 // Wrap function with autoresponse with promises and error handling
-function wrap (action) {
+function wrap (pickProps, action) {
 	if (!_.isFunction(action)) {
 		throw new Error('Controller action must be a function but ' + typeof action + ' is given');
 	}
@@ -37,7 +37,7 @@ function wrap (action) {
 	return function wrapAction (req, res, next) {
 
 		// Gather all possible params to a single object
-		var params = _.extend({}, req.params, req.query, req.body);
+		var params = pickProps(req);
 
 		try {
 			// Execute handler
@@ -73,9 +73,9 @@ function wrap (action) {
 }
 
 // Wrap function or functions object
-function wrapAll (controller) {
+function wrapAll (pickProps, controller) {
 	if (_.isFunction(controller)) {
-		return wrap(controller);
+		return wrap(pickProps, controller);
 	}
 
 	if (!_.isObject(controller)) {
@@ -84,10 +84,19 @@ function wrapAll (controller) {
 
 	var result = {};
 	for (var name in controller) {
-		result[name] = wrap(controller[name]);
+		result[name] = wrap(pickProps, controller[name]);
 	}
 
 	return result;
 }
 
-module.exports = wrapAll;
+function configure (pickProps) {
+	return wrapAll.bind(wrapAll, pickProps);
+}
+
+function defaultPickProps (req) {
+	return _.extend({}, req.params, req.query, req.body);
+}
+
+module.exports = wrapAll.bind(wrapAll, defaultPickProps);
+module.exports.configure = configure;
