@@ -154,25 +154,6 @@ describe('Responses', function () {
 			.exec(done);
 	});
 
-	it('should use custom error handler', function (done) {
-		app.post('/error-3', controller(function (params) {
-			return Promise.reject('err');
-		}));
-
-		controller.setErrorHandler(function (req, res) {
-			res.status(500).send('ERROR');
-		});
-
-		t(baseUrl)
-			.post('/error-3')
-			.as('error')
-			.assert(function(res) {
-				res.error.status.should.be.exactly(500);
-				res.error.body.should.be.exactly('ERROR');
-			})
-			.exec(done);
-	});
-
 	it('should return not modified if no data', function (done) {
 		app.put('/not-mod', controller(function (params) {
 			return;
@@ -199,5 +180,29 @@ describe('Responses', function () {
 				res.result.status.should.be.exactly(200);
 			})
 			.exec(done);
-	})
+	});
+
+	it('should response back passed params with custom configured controller', function (done) {
+		var testData = {
+			a: c.string,
+			b: c.card_data
+		};
+
+		var configuredController = controller.configure(function (req) {
+			return { a: req.body.a };
+		});
+		app.post('/pass-back-configure', configuredController(function (params) {
+			return params;
+		}));
+
+		t(baseUrl)
+			.post('/pass-back-configure', testData)
+			.as('passBack')
+			.assert(function(res, sample) {
+				res.passBack.status.should.be.exactly(201);
+				_.isEqual(res.passBack.body.a, testData.a).should.be.ok;
+				_.isEqual(res.passBack.body.b, undefined).should.be.ok;
+			})
+			.exec(done);
+	});
 });
