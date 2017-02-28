@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": "git@github.com:boo1ean/app-controller.git",
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
-  "collaborators": [
+  "contibutors": [
     "Oleksandr Bondarchuk <alex.coockoo@gmail.com> (https://github.com/coockoo)"
   ],
   "license": "MIT",
