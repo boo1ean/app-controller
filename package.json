@@ -1,6 +1,6 @@
 {
   "name": "app-controller",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Response with promised json",
   "keywords": "app-helpers, express, response, json, rest",
   "main": "index.js",
@@ -15,12 +15,12 @@
     "body-parser": "^1.9.2",
     "casual": "^1.4.6",
     "express": "^4.10.2",
-    "mocha": "^2.0.1",
+    "mocha": "^5.2.0",
     "q": "^1.1.1",
     "should": "^4.3.0",
     "yartf": "0.0.16"
   },
   "dependencies": {
-    "lodash": "^2.4.1"
+    "lodash": "^4.17.11"
   }
 }
